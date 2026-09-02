@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+  <style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; margin:0; }
+
+  /* =====================================================================
+   * Tailwind Play CDN 대체 - 실제 사용 중인 유틸리티 클래스만 정적으로 정의
+   * (Play CDN은 DOM이 바뀔 때마다 브라우저에서 실시간으로 CSS를 다시 계산하는
+   *  방식이라, 달력을 자주 다시 그리는 이 앱에서는 매번 그 비용이 붙어 느려짐)
+   * ===================================================================*/
+  .flex{display:flex} .flex-col{flex-direction:column} .flex-wrap{flex-wrap:wrap} .flex-1{flex:1 1 0%}
+  .grid{display:grid} .grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))} .grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .items-center{align-items:center} .items-end{align-items:flex-end}
+  .justify-between{justify-content:space-between} .justify-center{justify-content:center} .justify-end{justify-content:flex-end}
+  .shrink-0{flex-shrink:0} .w-fit{width:fit-content} .w-full{width:100%}
+  .min-h-screen{min-height:100vh} .max-w-7xl{max-width:80rem} .max-w-xs{max-width:20rem}
+  .mx-auto{margin-left:auto;margin-right:auto} .ml-auto{margin-left:auto}
+  .overflow-auto{overflow:auto} .overflow-x-auto{overflow-x:auto} .whitespace-nowrap{white-space:nowrap}
+  .hidden{display:none !important} .fixed{position:fixed} .inset-0{top:0;right:0;bottom:0;left:0}
+  .top-4{top:1rem} .right-4{right:1rem} .z-50{z-index:50} .col-span-4{grid-column:span 4 / span 4}
+  .gap-1{gap:0.25rem} .gap-2{gap:0.5rem} .gap-3{gap:0.75rem} .gap-4{gap:1rem}
+  .mt-2{margin-top:0.5rem} .mt-3{margin-top:0.75rem} .mt-4{margin-top:1rem}
+  .mb-2{margin-bottom:0.5rem} .mb-3{margin-bottom:0.75rem} .mb-4{margin-bottom:1rem} .mb-6{margin-bottom:1.5rem} .mb-8{margin-bottom:2rem}
+  .p-0\.5{padding:0.125rem} .p-1{padding:0.25rem} .p-2{padding:0.5rem} .p-3{padding:0.75rem} .p-4{padding:1rem}
+  .px-2{padding-left:0.5rem;padding-right:0.5rem} .px-3{padding-left:0.75rem;padding-right:0.75rem}
+  .py-1{padding-top:0.25rem;padding-bottom:0.25rem} .py-2{padding-top:0.5rem;padding-bottom:0.5rem} .py-4{padding-top:1rem;padding-bottom:1rem}
+  .space-y-2 > * + *{margin-top:0.5rem}
+  .rounded-2xl{border-radius:1rem} .rounded-lg{border-radius:0.5rem} .rounded-xl{border-radius:0.75rem} .rounded-full{border-radius:9999px}
+  .shadow-sm{box-shadow:0 1px 2px rgba(0,0,0,.06)} .shadow-lg{box-shadow:0 10px 25px rgba(0,0,0,.12)}
+  .border{border:1px solid #e2e8f0} .border-4{border-width:4px}
+  .bg-white{background:#fff} .bg-white\/70{background:rgba(255,255,255,.7)} .bg-slate-50{background:#f8fafc} .bg-slate-100{background:#f1f5f9}
+  .bg-amber-50{background:#fffbeb} .bg-indigo-50{background:#eef2ff}
+  .border-slate-200{border-color:#e2e8f0} .border-slate-300{border-color:#cbd5e1} .border-amber-300{border-color:#fcd34d}
+  .border-indigo-200{border-color:#c7d2fe} .border-indigo-500{border-color:#6366f1} .border-t-transparent{border-top-color:transparent}
+  .text-slate-400{color:#94a3b8} .text-slate-500{color:#64748b} .text-slate-800{color:#1e293b} .text-slate-900{color:#0f172a}
+  .text-amber-800{color:#92400e} .text-indigo-700{color:#4338ca} .text-rose-600{color:#e11d48}
+  .text-xs{font-size:0.75rem;line-height:1rem} .text-sm{font-size:0.875rem;line-height:1.25rem} .text-base{font-size:1rem;line-height:1.5rem}
+  .text-lg{font-size:1.125rem;line-height:1.75rem} .text-xl{font-size:1.25rem;line-height:1.75rem}
+  .text-center{text-align:center} .font-semibold{font-weight:600} .font-bold{font-weight:700} .font-normal{font-weight:400}
+  .cursor-pointer{cursor:pointer} .underline{text-decoration:underline}
+  .backdrop-blur-sm{backdrop-filter:blur(4px)} .animate-spin{animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .w-10{width:2.5rem} .w-14{width:3.5rem} .w-16{width:4rem} .w-24{width:6rem} .w-32{width:8rem} .h-10{height:2.5rem}
+  .text-\[10px\]{font-size:10px} .min-w-\[140px\]{min-width:140px} .max-h-\[60vh\]{max-height:60vh}
+  .hover\:bg-slate-100:hover{background:#f1f5f9} .hover\:text-slate-700:hover{color:#334155}
+  @media (min-width:640px){
+    .sm\:flex-row{flex-direction:row} .sm\:gap-3{gap:0.75rem} .sm\:items-center{align-items:center}
+    .sm\:justify-between{justify-content:space-between} .sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .sm\:p-4{padding:1rem} .sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}
+    .sm\:text-2xl{font-size:1.5rem;line-height:2rem} .sm\:text-lg{font-size:1.125rem;line-height:1.75rem} .sm\:text-sm{font-size:0.875rem;line-height:1.25rem}
+  }
+  @media (min-width:1024px){
+    .lg\:col-span-2{grid-column:span 2 / span 2} .lg\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media print{
+    .print\:block{display:block} .print\:px-0{padding-left:0;padding-right:0} .print\:py-0{padding-top:0;padding-bottom:0}
+  }
+  /* max-h-96 (설정 탭 표 스크롤 영역) */
+  .max-h-96{max-height:24rem}
+  .border-collapse{border-collapse:collapse}
+
+  .tab-btn {
+    padding: 0.5rem 1.1rem; border-radius: 0.6rem; font-size: 0.98rem; font-weight: 600;
+    color: #64748b;
+  }
+  .tab-btn.active { background: #4f46e5; color: white; }
+
+  .stats-subtab {
+    padding: 0.5rem 1.1rem; border-radius: 0.6rem; font-size: 0.92rem; font-weight: 600; color: #64748b;
+  }
+  .stats-subtab.active { background: #4f46e5; color: white; }
+
+  .view-btn {
+    padding: 0.4rem 0.85rem; border-radius: 0.5rem; font-size: 0.9rem; color: #475569;
+  }
+  .view-btn.active { background: white; color: #1e293b; box-shadow: 0 1px 2px rgba(0,0,0,.08); font-weight: 600; }
+
+  .icon-btn {
+    width: 2.3rem; height: 2.3rem; border-radius: 0.5rem; border: 1px solid #e2e8f0;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem;
+    background: white;
+  }
+  .icon-btn:hover { background: #f1f5f9; }
+
+  .btn-primary {
+    background: #4f46e5; color: white; padding: 0.55rem 1.05rem; border-radius: 0.6rem;
+    font-size: 0.95rem; font-weight: 600;
+  }
+  .btn-primary:hover { background: #4338ca; }
+
+  .btn-secondary {
+    background: #f1f5f9; color: #334155; padding: 0.55rem 1.05rem; border-radius: 0.6rem;
+    font-size: 0.95rem; font-weight: 600; border: 1px solid #e2e8f0;
+  }
+  .btn-secondary:hover { background: #e2e8f0; }
+
+  .select-box, .input-box {
+    border: 1px solid #cbd5e1; border-radius: 0.5rem; padding: 0.5rem 0.7rem; font-size: 0.92rem;
+    background: white;
+  }
+  .select-box:focus, .input-box:focus { outline: 2px solid #a5b4fc; border-color: #6366f1; }
+
+  /* 일자 입력 + 요일 표시를 하나의 테두리 박스로 통합
+     - 브라우저 내장 날짜 표시(빈 "()" 등 로케일 이슈)를 완전히 감추고,
+       대신 우리가 직접 만든 텍스트를 그 위에 겹쳐서 보여줌 (클릭하면 여전히 달력이 뜸) */
+  .date-field-box {
+    display: flex; align-items: center; border: 1px solid #cbd5e1; border-radius: 0.5rem;
+    background: white;
+  }
+  .date-field-box:focus-within { outline: 2px solid #a5b4fc; border-color: #6366f1; }
+  .date-input-wrap { position: relative; flex: 1; min-width: 0; }
+  .date-input-flush {
+    width: 100%; border: none; outline: none; background: transparent; padding: 0.55rem 0.7rem; font-size: 0.98rem;
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    color: transparent; caret-color: transparent;
+  }
+  .date-overlay-text {
+    position: absolute; inset: 0; display: flex; align-items: center; padding: 0 1.9rem 0 0.7rem;
+    pointer-events: none; font-size: 0.98rem; font-weight: 700; color: #1e293b;
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; white-space: nowrap;
+  }
+  .date-weekday-text { font-weight: 800; color: #4f46e5; font-size: 0.98rem; white-space: nowrap; }
+
+  .field-label { display:block; font-size: 0.98rem; color:#1e293b; margin-bottom:0.6rem; font-weight:800; }
+
+  /* 교시 선택 - 그리드형 박스 (기존 알약 모양 대체) */
+  .period-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
+  .period-chip {
+    border: 1px solid #cbd5e1; border-radius: 0.6rem; padding: 0.75rem 0.5rem; font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; user-select: none; text-align: center; line-height: 1.45; background: white;
+  }
+  .period-chip .period-time { display:block; font-size: 0.82rem; font-weight: 500; color: #64748b; margin-top: 0.2rem; }
+  .period-chip .period-note { display:block; font-size: 0.75rem; font-weight: 500; color: #94a3b8; margin-top: 0.3rem; }
+  .period-chip.selected { background: #4f46e5; color: white; border-color: #4f46e5; }
+  .period-chip.selected .period-time { color: rgba(255,255,255,0.9); }
+  .period-chip.selected .period-note { color: rgba(255,255,255,0.85); }
+  .period-chip.disabled { opacity: 0.35; cursor: default; }
+
+  /* 사유/지도내용 - 구분(카테고리)별로 묶은 체크리스트 (기존 알약 모양 대체) */
+  .choice-section { margin-bottom: 1.2rem; }
+  .choice-section:last-child { margin-bottom: 0; }
+  .choice-section-title {
+    font-size: 0.9rem; font-weight: 800; color: #4338ca; margin-bottom: 0.6rem;
+    text-transform: none; letter-spacing: 0.01em;
+  }
+  .choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; }
+  .choice-item {
+    display: flex; align-items: center; gap: 0.55rem; border: 1px solid #e2e8f0; border-radius: 0.6rem;
+    padding: 0.8rem 0.85rem; font-size: 1.02rem; font-weight: 500; cursor: pointer; user-select: none; line-height: 1.4;
+    background: white; transition: background .1s, border-color .1s;
+  }
+  .choice-item:hover { border-color: #a5b4fc; }
+  .choice-item .check-box {
+    width: 1.3rem; height: 1.3rem; flex-shrink: 0; border: 1.5px solid #cbd5e1; border-radius: 0.35rem;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; color: white;
+  }
+  .choice-item.selected { background: #eef2ff; border-color: #6366f1; color: #3730a3; font-weight: 700; }
+  .choice-item.selected .check-box { background: #4f46e5; border-color: #4f46e5; }
+  .choice-item.disabled { opacity: 0.35; cursor: default; }
+
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); z-index: 40;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-box {
+    background: white; border-radius: 1rem; padding: 1.75rem; width: 100%; max-width: 42rem;
+    max-height: 90vh; overflow: auto;
+  }
+
+  .popover-btn { padding: 0.35rem 0.5rem; border-radius: 0.5rem; white-space: nowrap; }
+  .popover-btn:hover { background: #f1f5f9; }
+
+  /* ==== 달력 공통 ==== */
+  .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(135px,1fr)); }
+  .cal-head-cell { padding: 0.7rem; text-align:center; font-size:1rem; font-weight:700; color:#64748b; border-bottom:1px solid #e2e8f0; }
+  .cal-day-cell {
+    min-height: 132px; border: 1px solid #f1f5f9; padding: 0.5rem; vertical-align: top; position: relative;
+    transition: background .15s;
+  }
+  .cal-day-cell.other-month { background: #fafafa; color:#cbd5e1; }
+  .cal-day-cell.today { background: #eef2ff; }
+  .cal-day-cell.drop-target { background: #fef9c3 !important; outline: 2px dashed #eab308; }
+  .cal-day-num { font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; }
+
+  .entry-chip {
+    font-size: 0.9rem; padding: 0.28rem 0.5rem; border-radius: 0.45rem; margin-bottom: 0.25rem;
+    background: #e0e7ff; color:#3730a3; cursor: grab; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    border-left: 3px solid #6366f1;
+  }
+  .entry-chip.selected-for-action { outline: 2px solid #f59e0b; }
+  .entry-chip:hover { background:#c7d2fe; }
+
+  /* ==== 주간 뷰(교시 x 날짜 표) ==== */
+  .week-table { width:100%; border-collapse: collapse; }
+  .week-table th { border:1px solid #e2e8f0; padding:0.7rem; font-size:1rem; background:#f8fafc; }
+  .week-table td {
+    border:1px solid #f1f5f9; padding:0.45rem; vertical-align: top; min-width:150px; height: 108px;
+    transition: background .15s;
+  }
+  .week-table td.drop-target { background: #fef9c3 !important; outline: 2px dashed #eab308; }
+  .period-th { width: 115px; font-size:0.95rem; line-height:1.4; }
+
+  .add-cell-hint { font-size: 0.85rem; color:#cbd5e1; text-align:center; padding-top:1.5rem; }
+  .cal-day-cell:hover .add-cell-hint, .week-table td:hover .add-cell-hint { color:#94a3b8; }
+
+  /* ==== 통계 테이블 ==== */
+  #stats-teacher-table td, #stats-student-table td,
+  #stats-teacher-table th, #stats-student-table th,
+  #stats-detail-table td, #stats-detail-table th,
+  #student-table td, #student-table th, #teacher-table td, #teacher-table th {
+    border: 1px solid #e2e8f0; padding: 0.4rem 0.5rem; text-align:left;
+  }
+  #stats-teacher-table th, #stats-student-table th, #stats-detail-table th,
+  #student-table th, #teacher-table th { background:#f8fafc; font-size:0.75rem; color:#475569; }
+
+
+
+  /* ==== 인쇄 ==== */
+  @media print {
+    .print\:hidden { display:none !important; }
+    body { background: white; }
+    #stats-detail-table th, #stats-detail-table td { border: 1px solid #000; font-size: 11px; }
+    .sign-col { width: 90px; }
+    /* 인쇄할 땐 현재 어느 서브탭을 보고 있든 상관없이 상세내역만 출력 */
+    #stats-summary-view { display:none !important; }
+    #stats-detail-view { display:block !important; }
+    #tab-calendar, #tab-settings { display:none !important; }
+  }
+</style>
+
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+  <!-- 로딩 오버레이 -->
+  <div id="loading-overlay" class="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="flex flex-col items-center gap-3">
+      <div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-sm text-slate-500">처리 중입니다...</p>
+    </div>
+  </div>
+
+  <!-- 토스트 -->
+  <div id="toast" class="fixed top-4 right-4 z-50 hidden max-w-xs"></div>
+
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 py-4 print:px-0 print:py-0">
+
+    <!-- 헤더 -->
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 print:hidden">
+      <div>
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900">개별학생교육지원 대장</h1>
+      </div>
+      <nav class="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm w-fit">
+        <button class="tab-btn" data-tab="calendar">달력</button>
+        <button class="tab-btn" data-tab="stats">통계</button>
+        <button class="tab-btn" data-tab="settings">설정</button>
+      </nav>
+    </header>
+
+    <!-- ================= 달력 탭 ================= -->
+    <section id="tab-calendar" class="tab-panel">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-4 mb-4 print:hidden">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 justify-between">
+          <div class="flex items-center gap-2">
+            <button id="btn-prev" class="icon-btn">◀</button>
+            <h2 id="calendar-title" class="text-lg sm:text-xl font-semibold min-w-[140px] text-center"></h2>
+            <button id="btn-next" class="icon-btn">▶</button>
+            <button id="btn-today" class="text-xs px-2 py-1 rounded-lg border border-slate-300 hover:bg-slate-100">오늘</button>
+            <span class="text-xs text-indigo-600 font-semibold whitespace-nowrap">📌 날짜/교시를 누르면 바로 등록할 수 있어요</span>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex bg-slate-100 rounded-lg p-0.5">
+              <button id="view-month" class="view-btn">월간</button>
+              <button id="view-week" class="view-btn">주간</button>
+            </div>
+            <select id="teacher-filter" class="select-box">
+              <option value="all">전체 교사</option>
+            </select>
+            <button id="btn-add-log" class="btn-primary">+ 지도내역 등록</button>
+          </div>
+        </div>
+        <div id="paste-banner" class="hidden mt-3 text-sm bg-amber-50 border border-amber-300 text-amber-800 rounded-lg px-3 py-2 flex items-center justify-between">
+          <span id="paste-banner-text"></span>
+          <button id="btn-cancel-paste" class="text-xs underline">취소</button>
+        </div>
+      </div>
+
+      <div id="calendar-container" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-x-auto"></div>
+
+      <p class="text-xs text-slate-400 mt-2 print:hidden">
+        PC: 항목을 마우스로 드래그해 다른 칸에 놓으면 이동, <b>Alt</b> 키를 누른 채 드래그하면 복사됩니다.<br>
+        모바일/터치: 항목을 탭해 "복사" 또는 "이동"을 선택한 뒤, 옮길 칸을 탭하세요.
+      </p>
+    </section>
+
+    <!-- ================= 통계 탭 ================= -->
+    <section id="tab-stats" class="tab-panel hidden">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-4 print:hidden">
+        <div class="flex flex-wrap items-end gap-3">
+          <div>
+            <label class="field-label">시작일</label>
+            <div class="date-field-box">
+              <div class="date-input-wrap">
+                <input type="date" id="stats-start" class="date-input-flush" lang="en-CA">
+                <div id="stats-start-overlay" class="date-overlay-text"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">종료일</label>
+            <div class="date-field-box">
+              <div class="date-input-wrap">
+                <input type="date" id="stats-end" class="date-input-flush" lang="en-CA">
+                <div id="stats-end-overlay" class="date-overlay-text"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">담당 교사</label>
+            <select id="stats-teacher" class="select-box">
+              <option value="all">전체 교사</option>
+            </select>
+          </div>
+          <button id="btn-run-stats" class="btn-primary">조회</button>
+          <button id="btn-print-stats" class="btn-secondary ml-auto">🖨 상세내역 인쇄</button>
+        </div>
+      </div>
+
+      <div class="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm w-fit mb-4 print:hidden">
+        <button class="stats-subtab" data-stats-tab="summary">총 지도교시</button>
+        <button class="stats-subtab" data-stats-tab="detail">상세내역</button>
+      </div>
+
+      <div id="stats-result">
+        <div id="stats-summary-view" class="grid sm:grid-cols-2 gap-4 mb-4">
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+            <h3 class="font-semibold mb-3">교사별 총 지도 교시</h3>
+            <table class="w-full text-sm" id="stats-teacher-table"></table>
+          </div>
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+            <h3 class="font-semibold mb-3">학생별 총 지도 교시</h3>
+            <table class="w-full text-sm" id="stats-student-table"></table>
+          </div>
+        </div>
+
+        <div id="stats-detail-view" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 hidden">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold">상세 내역 (기간: <span id="stats-range-label"></span>, 총 <span id="stats-total-label">0</span>교시)</h3>
+          </div>
+          <div id="print-area">
+            <div id="print-header" class="hidden print:block mb-4">
+              <h2 class="text-lg font-bold text-center">개별학생교육지원 대장</h2>
+              <p class="text-center text-sm" id="print-range-label"></p>
+            </div>
+            <table class="w-full text-sm border-collapse" id="stats-detail-table"></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 설정 탭 ================= -->
+    <section id="tab-settings" class="tab-panel hidden print:hidden">
+      <div class="grid lg:grid-cols-2 gap-4">
+        <!-- 학생 관리 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+          <h3 class="font-semibold mb-3">학생 관리</h3>
+          <form id="form-add-student" class="grid grid-cols-3 gap-2 mb-3 text-sm">
+            <input required placeholder="고유번호(예:15)" class="input-box" name="id">
+            <input required type="number" min="1" max="6" placeholder="학년" class="input-box" name="grade">
+            <input required placeholder="반" class="input-box" name="classNo">
+            <input required placeholder="이름" class="input-box" name="name">
+            <input placeholder="번호(출석번호 등)" class="input-box" name="rollNo">
+            <select class="select-box" name="gender">
+              <option value="">성별-</option>
+              <option value="남">남</option>
+              <option value="여">여</option>
+            </select>
+            <button class="btn-primary col-span-3" type="submit">학생 1명 추가</button>
+          </form>
+
+          <details class="mb-3 border border-indigo-200 rounded-lg">
+            <summary class="cursor-pointer px-3 py-2 text-sm font-semibold text-indigo-700 bg-indigo-50 rounded-lg">
+              📋 여러 명 한 번에 등록
+            </summary>
+            <div class="p-3">
+              <div id="bulk-student-rows" class="space-y-2 mb-2"></div>
+              <div class="flex gap-2">
+                <button type="button" id="btn-add-student-row" class="btn-secondary text-xs">+ 행 추가</button>
+                <button type="button" id="btn-save-students-bulk" class="btn-primary text-xs">일괄저장</button>
+              </div>
+              <p class="text-xs text-slate-400 mt-2">고유번호·이름이 비어있는 행은 자동으로 건너뜁니다. 이미 있는 번호는 건너뛰고 안내해드려요.</p>
+            </div>
+          </details>
+
+          <div class="overflow-auto max-h-96">
+            <table class="w-full text-sm" id="student-table"></table>
+          </div>
+        </div>
+
+        <!-- 교사 관리 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+          <h3 class="font-semibold mb-3">교사 관리</h3>
+          <form id="form-add-teacher" class="grid grid-cols-3 gap-2 mb-3 text-sm">
+            <input required placeholder="고유번호(예:01)" class="input-box" name="id">
+            <input required placeholder="이름" class="input-box" name="name">
+            <input placeholder="담당" class="input-box" name="assign">
+            <input placeholder="구분" class="input-box" name="division">
+            <input placeholder="보직" class="input-box" name="position">
+            <button class="btn-primary" type="submit">교사 1명 추가</button>
+          </form>
+
+          <details class="mb-3 border border-indigo-200 rounded-lg">
+            <summary class="cursor-pointer px-3 py-2 text-sm font-semibold text-indigo-700 bg-indigo-50 rounded-lg">
+              📋 여러 명 한 번에 등록
+            </summary>
+            <div class="p-3">
+              <div id="bulk-teacher-rows" class="space-y-2 mb-2"></div>
+              <div class="flex gap-2">
+                <button type="button" id="btn-add-teacher-row" class="btn-secondary text-xs">+ 행 추가</button>
+                <button type="button" id="btn-save-teachers-bulk" class="btn-primary text-xs">일괄저장</button>
+              </div>
+              <p class="text-xs text-slate-400 mt-2">고유번호·이름이 비어있는 행은 자동으로 건너뜁니다. 이미 있는 번호는 건너뛰고 안내해드려요.</p>
+            </div>
+          </details>
+
+          <div class="overflow-auto max-h-96">
+            <table class="w-full text-sm" id="teacher-table"></table>
+          </div>
+        </div>
+
+        <!-- 사유 관리 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+          <h3 class="font-semibold mb-3">개별학생교육지원 사유 관리</h3>
+          <form id="form-add-reason" class="grid grid-cols-4 gap-2 mb-3 text-sm">
+            <input required placeholder="번호(예:12)" class="input-box" name="id">
+            <input required placeholder="사유명" class="input-box" name="name">
+            <input placeholder="구분(예:안전 관련)" class="input-box" name="category">
+            <button class="btn-primary" type="submit">추가</button>
+          </form>
+          <p class="text-xs text-slate-400 -mt-2 mb-3">'구분'을 같게 입력하면 등록 화면에서 같은 묶음으로 표시됩니다. 비워두면 "기타" 묶음에 들어가요.</p>
+
+          <details class="mb-3 border border-indigo-200 rounded-lg">
+            <summary class="cursor-pointer px-3 py-2 text-sm font-semibold text-indigo-700 bg-indigo-50 rounded-lg">
+              📋 여러 개 한 번에 등록
+            </summary>
+            <div class="p-3">
+              <div id="bulk-reason-rows" class="space-y-2 mb-2"></div>
+              <div class="flex gap-2">
+                <button type="button" id="btn-add-reason-row" class="btn-secondary text-xs">+ 행 추가</button>
+                <button type="button" id="btn-save-reasons-bulk" class="btn-primary text-xs">일괄저장</button>
+              </div>
+              <p class="text-xs text-slate-400 mt-2">번호·이름이 비어있는 행은 자동으로 건너뜁니다. 이미 있는 번호는 건너뛰고 안내해드려요.</p>
+            </div>
+          </details>
+
+          <div class="overflow-auto max-h-96">
+            <table class="w-full text-sm" id="reason-table"></table>
+          </div>
+        </div>
+
+        <!-- 지도내용 관리 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+          <h3 class="font-semibold mb-3">수업 및 생활지도 내용 관리</h3>
+          <form id="form-add-content" class="grid grid-cols-4 gap-2 mb-3 text-sm">
+            <input required placeholder="번호(예:09)" class="input-box" name="id">
+            <input required placeholder="내용명" class="input-box" name="name">
+            <input placeholder="구분(예:상담)" class="input-box" name="category">
+            <button class="btn-primary" type="submit">추가</button>
+          </form>
+          <p class="text-xs text-slate-400 -mt-2 mb-3">'구분'을 같게 입력하면 등록 화면에서 같은 묶음으로 표시됩니다. 비워두면 "기타" 묶음에 들어가요.</p>
+
+          <details class="mb-3 border border-indigo-200 rounded-lg">
+            <summary class="cursor-pointer px-3 py-2 text-sm font-semibold text-indigo-700 bg-indigo-50 rounded-lg">
+              📋 여러 개 한 번에 등록
+            </summary>
+            <div class="p-3">
+              <div id="bulk-content-rows" class="space-y-2 mb-2"></div>
+              <div class="flex gap-2">
+                <button type="button" id="btn-add-content-row" class="btn-secondary text-xs">+ 행 추가</button>
+                <button type="button" id="btn-save-contents-bulk" class="btn-primary text-xs">일괄저장</button>
+              </div>
+              <p class="text-xs text-slate-400 mt-2">번호·이름이 비어있는 행은 자동으로 건너뜁니다. 이미 있는 번호는 건너뛰고 안내해드려요.</p>
+            </div>
+          </details>
+
+          <div class="overflow-auto max-h-96">
+            <table class="w-full text-sm" id="content-table"></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============ 지도내역 등록/수정 모달 ============ -->
+
+  <div id="modal-log" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">지도내역 등록</h3>
+        <button class="text-slate-400 hover:text-slate-700" id="modal-log-close">✕</button>
+      </div>
+      <form id="form-log">
+        <div class="grid sm:grid-cols-2 gap-4 mb-8">
+          <div>
+            <label class="field-label">일자</label>
+            <div class="date-field-box">
+              <div class="date-input-wrap">
+                <input type="date" name="date" id="log-date" class="date-input-flush" lang="en-CA" required>
+                <div id="log-date-overlay" class="date-overlay-text"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">담당 교사</label>
+            <select name="teacherId" id="log-teacher" class="select-box w-full" required></select>
+          </div>
+        </div>
+        <div class="mb-8">
+          <label class="field-label" id="log-periods-label">교시 (다중 선택 가능)</label>
+          <div id="log-periods" class="period-grid"></div>
+        </div>
+        <div class="mb-8">
+          <label class="field-label">학생</label>
+          <select name="studentId" id="log-student" class="select-box w-full" required></select>
+        </div>
+        <div class="mb-8">
+          <label class="field-label">개별학생교육지원 사유 (해당 항목 모두 선택)</label>
+          <div id="log-reason-checks"></div>
+          <textarea id="log-reason-etc-text" rows="2" class="input-box w-full mt-2 hidden" placeholder="기타 사유를 자세히 입력하세요"></textarea>
+        </div>
+        <div class="mb-8">
+          <label class="field-label">수업 및 생활지도 내용 (해당 항목 모두 선택)</label>
+          <div id="log-content-checks"></div>
+          <textarea id="log-content-etc-text" rows="2" class="input-box w-full mt-2 hidden" placeholder="기타 내용을 자세히 입력하세요"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" id="btn-log-cancel" class="btn-secondary">취소</button>
+          <button type="submit" class="btn-primary">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ 날짜 상세(해당일 전체 목록) 모달 ============ -->
+  <div id="modal-day" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold" id="modal-day-title">상세 내역</h3>
+        <button class="text-slate-400 hover:text-slate-700" id="modal-day-close">✕</button>
+      </div>
+      <div id="modal-day-body" class="space-y-2 max-h-[60vh] overflow-auto"></div>
+      <div class="flex justify-end mt-4">
+        <button type="button" id="modal-day-add" class="btn-primary">+ 이 날짜에 등록</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 항목 액션(복사/이동/삭제) 팝오버 ============ -->
+  <div id="entry-popover" class="hidden fixed z-50 bg-white border border-slate-200 rounded-xl shadow-lg p-2 flex gap-1 text-sm">
+    <button data-act="copy" class="popover-btn">📋 복사</button>
+    <button data-act="move" class="popover-btn">✂️ 이동</button>
+    <button data-act="edit" class="popover-btn">✏️ 수정</button>
+    <button data-act="delete" class="popover-btn text-rose-600">🗑 삭제</button>
+  </div>
+
+  <script>
+/* =====================================================================
+ * 전역 상태
+ * ===================================================================*/
+const STATE = {
+  view: 'month',
+  anchor: new Date(),
+  teacherFilter: 'all',
+  students: [],
+  teachers: [],
+  periodMeta: [],
+  reasonOptions: [],
+  contentOptions: [],
+  logs: [],
+  pendingAction: null,   // { type:'copy'|'move', id }
+  editingId: null,
+  dragId: null,
+  selectedPeriods: []
+};
+
+/* =====================================================================
+ * 유틸
+ * ===================================================================*/
+function pad2(n){ return String(n).padStart(2,'0'); }
+function fmtDate(d){ return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()); }
+function parseDate(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+function addDays(d, n){ const nd = new Date(d); nd.setDate(nd.getDate()+n); return nd; }
+function startOfWeek(d){ const nd = new Date(d); nd.setDate(nd.getDate()-nd.getDay()); return nd; }
+function sameMonth(a,b){ return a.getMonth()===b.getMonth() && a.getFullYear()===b.getFullYear(); }
+function isToday(d){ const t=new Date(); return d.getFullYear()===t.getFullYear() && d.getMonth()===t.getMonth() && d.getDate()===t.getDate(); }
+const WEEKDAY_LABEL = ['일','월','화','수','목','금','토'];
+
+function showLoading(){ document.getElementById('loading-overlay').classList.remove('hidden'); }
+function hideLoading(){ document.getElementById('loading-overlay').classList.add('hidden'); }
+function showToast(msg, isError){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'fixed top-4 right-4 max-w-xs px-4 py-3 rounded-xl shadow-lg text-sm font-medium ' +
+    (isError ? 'bg-rose-600 text-white' : 'bg-slate-900 text-white');
+  t.style.zIndex = '9999'; // 모달(z-index 40)보다 항상 위에 뜨도록 확실히 고정
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=> t.classList.add('hidden'), 2500);
+}
+
+function callServer(fnName, args, onSuccess){
+  showLoading();
+  const runner = google.script.run
+    .withSuccessHandler((res)=>{ hideLoading(); onSuccess && onSuccess(res); })
+    .withFailureHandler((err)=>{ hideLoading(); showToast((err && err.message) || String(err), true); });
+  runner[fnName].apply(runner, args || []);
+}
+
+/* =====================================================================
+ * 초기화
+ * ===================================================================*/
+document.addEventListener('DOMContentLoaded', () => {
+  bindStaticEvents();
+  for(let i=0;i<3;i++){ addBulkStudentRow(); addBulkTeacherRow(); addBulkReasonRow(); addBulkContentRow(); }
+
+  // 처음 보여줄 달력(이번 달) 범위를 미리 계산해서, 마스터데이터+달력 로그를 한 번의 왕복으로 함께 요청
+  const initialDays = getMonthGridDays(STATE.anchor);
+  const initialStart = fmtDate(initialDays[0]), initialEnd = fmtDate(initialDays[initialDays.length-1]);
+
+  callServer('getInitialPageData', [initialStart, initialEnd], (data) => {
+    STATE.students = data.students;
+    STATE.teachers = data.teachers;
+    STATE.periodMeta = data.periodMeta;
+    STATE.reasonOptions = data.reasonOptions;
+    STATE.contentOptions = data.contentOptions;
+    STATE.logs = data.logs;
+    populateTeacherSelects();
+    populateStudentSelect();
+    renderPeriodChips();
+    renderChoiceChips('log-reason-checks', STATE.reasonOptions, 'log-reason-etc-text');
+    renderChoiceChips('log-content-checks', STATE.contentOptions, 'log-content-etc-text');
+    renderStudentTable();
+    renderTeacherTable();
+    renderReasonTable();
+    renderContentTable();
+    switchTab('calendar');
+    document.getElementById('calendar-title').textContent =
+      `${STATE.anchor.getFullYear()}년 ${STATE.anchor.getMonth()+1}월`;
+    document.getElementById('view-month').classList.toggle('active', STATE.view==='month');
+    document.getElementById('view-week').classList.toggle('active', STATE.view==='week');
+    paintMonthView(initialDays); // 서버 재조회 없이 방금 받아온 로그로 바로 그림
+  });
+
+  // 통계 기본 기간: 이번달 1일~오늘
+  const today = new Date();
+  document.getElementById('stats-start').value = fmtDate(new Date(today.getFullYear(), today.getMonth(), 1));
+  document.getElementById('stats-end').value = fmtDate(today);
+  updateDateDisplay('stats-start');
+  updateDateDisplay('stats-end');
+});
+
+function bindStaticEvents(){
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> switchTab(btn.dataset.tab));
+  });
+
+  document.getElementById('btn-prev').addEventListener('click', ()=> shiftAnchor(-1));
+  document.getElementById('btn-next').addEventListener('click', ()=> shiftAnchor(1));
+  document.getElementById('btn-today').addEventListener('click', ()=>{ STATE.anchor = new Date(); renderCalendar(); });
+
+  document.getElementById('view-month').addEventListener('click', ()=>{ STATE.view='month'; renderCalendar(); });
+  document.getElementById('view-week').addEventListener('click', ()=>{ STATE.view='week'; renderCalendar(); });
+
+  document.getElementById('teacher-filter').addEventListener('change', (e)=>{
+    STATE.teacherFilter = e.target.value; renderCalendar();
+  });
+
+  document.getElementById('btn-add-log').addEventListener('click', ()=> openAddModal(fmtDate(new Date()), null));
+  document.getElementById('btn-cancel-paste').addEventListener('click', clearPendingAction);
+
+  document.getElementById('modal-log-close').addEventListener('click', closeLogModal);
+  document.getElementById('btn-log-cancel').addEventListener('click', closeLogModal);
+  document.getElementById('form-log').addEventListener('submit', onSubmitLogForm);
+  document.getElementById('log-date').addEventListener('change', updateDateWeekday);
+  document.getElementById('stats-start').addEventListener('change', ()=> updateDateDisplay('stats-start'));
+  document.getElementById('stats-end').addEventListener('change', ()=> updateDateDisplay('stats-end'));
+
+  document.getElementById('modal-day-close').addEventListener('click', ()=> document.getElementById('modal-day').classList.add('hidden'));
+  document.getElementById('modal-day-add').addEventListener('click', ()=>{
+    const date = document.getElementById('modal-day').dataset.date;
+    document.getElementById('modal-day').classList.add('hidden');
+    openAddModal(date, null);
+  });
+
+  // 통계
+  document.getElementById('btn-run-stats').addEventListener('click', runStats);
+  document.getElementById('btn-print-stats').addEventListener('click', ()=> window.print());
+
+  // 통계 - 총 지도교시 / 상세내역 서브탭
+  document.querySelectorAll('.stats-subtab').forEach(btn=>{
+    btn.addEventListener('click', ()=> switchStatsSubtab(btn.dataset.statsTab));
+  });
+  switchStatsSubtab('summary');
+
+  // 설정 - 학생
+  document.getElementById('form-add-student').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    callServer('addStudent', [f.get('id'), Number(f.get('grade')), f.get('classNo'), f.get('name'), f.get('rollNo'), f.get('gender')], ()=>{
+      showToast('학생이 추가되었습니다.');
+      e.target.reset();
+      refreshMasterData();
+    });
+  });
+
+  // 설정 - 교사
+  document.getElementById('form-add-teacher').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    callServer('addTeacher', [f.get('id'), f.get('name'), f.get('assign'), f.get('division'), f.get('position')], ()=>{
+      showToast('교사가 추가되었습니다.');
+      e.target.reset();
+      refreshMasterData();
+    });
+  });
+
+  // 설정 - 학생 일괄등록
+  document.getElementById('btn-add-student-row').addEventListener('click', ()=> addBulkStudentRow());
+  document.getElementById('btn-save-students-bulk').addEventListener('click', saveBulkStudents);
+
+  // 설정 - 교사 일괄등록
+  document.getElementById('btn-add-teacher-row').addEventListener('click', ()=> addBulkTeacherRow());
+  document.getElementById('btn-save-teachers-bulk').addEventListener('click', saveBulkTeachers);
+
+  // 설정 - 사유
+  document.getElementById('form-add-reason').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    callServer('addReason', [f.get('id'), f.get('name'), f.get('category')], ()=>{
+      showToast('사유가 추가되었습니다.');
+      e.target.reset();
+      refreshMasterData();
+    });
+  });
+  document.getElementById('btn-add-reason-row').addEventListener('click', ()=> addBulkReasonRow());
+  document.getElementById('btn-save-reasons-bulk').addEventListener('click', saveBulkReasons);
+
+  // 설정 - 지도내용
+  document.getElementById('form-add-content').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    callServer('addContent', [f.get('id'), f.get('name'), f.get('category')], ()=>{
+      showToast('지도내용이 추가되었습니다.');
+      e.target.reset();
+      refreshMasterData();
+    });
+  });
+  document.getElementById('btn-add-content-row').addEventListener('click', ()=> addBulkContentRow());
+  document.getElementById('btn-save-contents-bulk').addEventListener('click', saveBulkContents);
+
+  // 항목 팝오버 바깥 클릭 시 닫기
+  document.addEventListener('click', (e)=>{
+    const pop = document.getElementById('entry-popover');
+    if(!pop.contains(e.target) && !e.target.classList.contains('entry-chip')){
+      pop.classList.add('hidden');
+    }
+  });
+
+  // 모달 바깥(어두운 배경) 클릭 시 닫기 - 배경 자체를 클릭했을 때만 (모달 박스 내부 클릭은 무시)
+  document.getElementById('modal-log').addEventListener('click', (e)=>{
+    if(e.target.id === 'modal-log') closeLogModal();
+  });
+  document.getElementById('modal-day').addEventListener('click', (e)=>{
+    if(e.target.id === 'modal-day') document.getElementById('modal-day').classList.add('hidden');
+  });
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.tab===name));
+  document.querySelectorAll('.tab-panel').forEach(p=> p.classList.toggle('hidden', p.id !== 'tab-'+name));
+}
+
+function switchStatsSubtab(name){
+  document.querySelectorAll('.stats-subtab').forEach(b=> b.classList.toggle('active', b.dataset.statsTab===name));
+  document.getElementById('stats-summary-view').classList.toggle('hidden', name !== 'summary');
+  document.getElementById('stats-detail-view').classList.toggle('hidden', name !== 'detail');
+}
+
+function refreshMasterData(){
+  callServer('getBootstrapData', [], (data) => {
+    STATE.students = data.students;
+    STATE.teachers = data.teachers;
+    STATE.reasonOptions = data.reasonOptions;
+    STATE.contentOptions = data.contentOptions;
+    populateTeacherSelects();
+    populateStudentSelect();
+    renderStudentTable();
+    renderTeacherTable();
+    renderReasonTable();
+    renderContentTable();
+    renderCalendar();
+  });
+}
+
+/* =====================================================================
+ * 마스터데이터 -> 셀렉트 박스 채우기
+ * ===================================================================*/
+function populateTeacherSelects(){
+  const opts = STATE.teachers.map(t=> `<option value="${t.id}">[${t.id}] ${t.name}</option>`).join('');
+  document.getElementById('teacher-filter').innerHTML = '<option value="all">전체 교사</option>' + opts;
+  document.getElementById('teacher-filter').value = STATE.teacherFilter;
+  document.getElementById('stats-teacher').innerHTML = '<option value="all">전체 교사</option>' + opts;
+  document.getElementById('log-teacher').innerHTML = opts;
+}
+function populateStudentSelect(){
+  const opts = STATE.students
+    .filter(s=>s.name)
+    .map(s=> `<option value="${s.id}">[${s.id}] ${s.grade}학년 ${s.classNo}반 ${s.name}</option>`).join('');
+  document.getElementById('log-student').innerHTML = opts;
+}
+function renderPeriodChips(){
+  const wrap = document.getElementById('log-periods');
+  wrap.innerHTML = STATE.periodMeta.map(p=>{
+    const title = p.note ? `${p.time} · ${p.note}` : p.time;
+    return `<span class="period-chip" data-period="${p.period}" title="${title}">${p.label}<span class="period-time">${p.time}</span>${p.note ? `<span class="period-note">${p.note}</span>` : ''}</span>`;
+  }).join('');
+  wrap.querySelectorAll('.period-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      if(chip.classList.contains('disabled')) return;
+      if(STATE.editingId){
+        // 수정 모드: 한 항목의 교시를 바꾸는 것이므로 단일 선택(라디오 방식)
+        wrap.querySelectorAll('.period-chip').forEach(c=> c.classList.remove('selected'));
+        chip.classList.add('selected');
+      } else {
+        chip.classList.toggle('selected');
+      }
+    });
+  });
+}
+
+/**
+ * 사유 / 수업 및 생활지도 내용 - 구분(카테고리)별로 묶어서 체크리스트 형태로 렌더링
+ * options: [{id, name, category}, ...] (사유관리/지도내용관리 시트에서 불러온 목록)
+ * 항상 목록 맨 끝에 "기타" 항목을 추가하고, 선택 시 아래 텍스트박스가 나타납니다.
+ */
+function renderChoiceChips(containerId, options, etcInputId){
+  const wrap = document.getElementById(containerId);
+  const groups = {};
+  const order = [];
+  options.forEach(opt=>{
+    const cat = (opt.category && opt.category.trim()) ? opt.category.trim() : '기타 항목';
+    if(!groups[cat]){ groups[cat] = []; order.push(cat); }
+    groups[cat].push(opt);
+  });
+
+  let html = '';
+  order.forEach(cat=>{
+    html += `<div class="choice-section"><div class="choice-section-title">${escapeHtml(cat)}</div><div class="choice-grid">`;
+    groups[cat].forEach(opt=>{
+      html += `<div class="choice-item" data-value="${escapeHtml(opt.name)}"><span class="check-box"></span><span>${escapeHtml(opt.name)}</span></div>`;
+    });
+    html += `</div></div>`;
+  });
+  html += `<div class="choice-section"><div class="choice-grid" style="grid-template-columns:1fr;">
+      <div class="choice-item" data-value="__etc__"><span class="check-box"></span><span>기타 (직접 입력)</span></div>
+    </div></div>`;
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('.choice-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      if(item.classList.contains('disabled')) return;
+      item.classList.toggle('selected');
+      item.querySelector('.check-box').textContent = item.classList.contains('selected') ? '✓' : '';
+      if(item.dataset.value === '__etc__'){
+        const etcInput = document.getElementById(etcInputId);
+        const on = item.classList.contains('selected');
+        etcInput.classList.toggle('hidden', !on);
+        if(!on) etcInput.value = '';
+      }
+    });
+  });
+}
+
+/** 선택된 체크박스(+기타 입력값)를 ", "로 이어붙인 문자열로 변환 */
+function collectChoiceValues(containerId, etcInputId){
+  const items = Array.from(document.querySelectorAll(`#${containerId} .choice-item.selected`));
+  const values = [];
+  items.forEach(item=>{
+    if(item.dataset.value === '__etc__'){
+      const etcText = document.getElementById(etcInputId).value.trim();
+      values.push(etcText ? `기타: ${etcText}` : '기타');
+    } else {
+      values.push(item.dataset.value);
+    }
+  });
+  return values.join(', ');
+}
+
+/**
+ * 수정 모드에서 기존에 저장된 문자열(예: "수업방해, 기타: 친구와 다툼")을 보고
+ * 최대한 원래 선택했던 체크박스를 다시 체크해줍니다. (완벽히 복원되지 않을 수도 있음)
+ */
+function prefillChoiceChips(containerId, etcInputId, savedText){
+  if(!savedText) return;
+  const parts = savedText.split(',').map(s=>s.trim()).filter(Boolean);
+  const wrap = document.getElementById(containerId);
+  parts.forEach(part=>{
+    if(part.indexOf('기타') === 0){
+      const etcItem = wrap.querySelector('.choice-item[data-value="__etc__"]');
+      if(etcItem){
+        etcItem.classList.add('selected');
+        etcItem.querySelector('.check-box').textContent = '✓';
+        const etcInput = document.getElementById(etcInputId);
+        etcInput.classList.remove('hidden');
+        const colonIdx = part.indexOf(':');
+        etcInput.value = colonIdx !== -1 ? part.slice(colonIdx+1).trim() : '';
+      }
+    } else {
+      const item = wrap.querySelector(`.choice-item[data-value="${cssEscapeAttr_(part)}"]`);
+      if(item){ item.classList.add('selected'); item.querySelector('.check-box').textContent = '✓'; }
+    }
+  });
+}
+function cssEscapeAttr_(s){ return String(s).replace(/"/g, '\\"'); }
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* =====================================================================
+ * 달력 - 데이터 로딩
+ * ===================================================================*/
+function shiftAnchor(dir){
+  if(STATE.view==='month'){
+    STATE.anchor = new Date(STATE.anchor.getFullYear(), STATE.anchor.getMonth()+dir, 1);
+  } else {
+    STATE.anchor = addDays(STATE.anchor, dir*7);
+  }
+  renderCalendar();
+}
+
+function renderCalendar(){
+  document.getElementById('view-month').classList.toggle('active', STATE.view==='month');
+  document.getElementById('view-week').classList.toggle('active', STATE.view==='week');
+
+  if(STATE.view==='month'){
+    const days = getMonthGridDays(STATE.anchor);
+    document.getElementById('calendar-title').textContent =
+      `${STATE.anchor.getFullYear()}년 ${STATE.anchor.getMonth()+1}월`;
+    const start = fmtDate(days[0]), end = fmtDate(days[days.length-1]);
+    callServer('getLogs', [start, end], (logs)=>{
+      STATE.logs = logs;
+      paintMonthView(days);
+    });
+  } else {
+    const weekStart = startOfWeek(STATE.anchor);
+    const days = Array.from({length:7}, (_,i)=> addDays(weekStart, i));
+    document.getElementById('calendar-title').textContent =
+      `${fmtDate(days[0])} ~ ${fmtDate(days[6])}`;
+    callServer('getLogs', [fmtDate(days[0]), fmtDate(days[6])], (logs)=>{
+      STATE.logs = logs;
+      paintWeekView(days);
+    });
+  }
+}
+
+/** 서버 재조회 없이 지금 갖고 있는 STATE.logs로만 화면을 다시 그림 (저장 속도 개선용) */
+function repaintCalendar(){
+  document.getElementById('view-month').classList.toggle('active', STATE.view==='month');
+  document.getElementById('view-week').classList.toggle('active', STATE.view==='week');
+  if(STATE.view==='month'){
+    paintMonthView(getMonthGridDays(STATE.anchor));
+  } else {
+    const weekStart = startOfWeek(STATE.anchor);
+    paintWeekView(Array.from({length:7}, (_,i)=> addDays(weekStart, i)));
+  }
+}
+
+function getMonthGridDays(anchor){
+  const first = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+  const start = startOfWeek(first);
+  return Array.from({length:42}, (_,i)=> addDays(start, i));
+}
+
+function visibleLogsFor(dateStr, period){
+  return STATE.logs.filter(l=>{
+    if(l.date !== dateStr) return false;
+    if(period !== undefined && l.period !== period) return false;
+    if(STATE.teacherFilter !== 'all'){
+      const t = STATE.teachers.find(t=>t.id===STATE.teacherFilter);
+      if(!t || l.teacherName !== t.name) return false;
+    }
+    return true;
+  }).sort((a,b)=> a.period - b.period);
+}
+
+/* =====================================================================
+ * 월간 뷰 렌더링
+ * ===================================================================*/
+function paintMonthView(days){
+  const container = document.getElementById('calendar-container');
+  let html = '<div class="cal-grid">';
+  WEEKDAY_LABEL.forEach(w=> html += `<div class="cal-head-cell">${w}</div>`);
+  days.forEach(d=>{
+    const dateStr = fmtDate(d);
+    const entries = visibleLogsFor(dateStr);
+    const classes = ['cal-day-cell'];
+    if(!sameMonth(d, STATE.anchor)) classes.push('other-month');
+    if(isToday(d)) classes.push('today');
+    html += `<div class="${classes.join(' ')}" data-date="${dateStr}">
+      <div class="cal-day-num">${d.getDate()}</div>
+      <div class="entries-wrap">`;
+    entries.slice(0,4).forEach(en=>{
+      html += entryChipHtml(en);
+    });
+    if(entries.length>4) html += `<div class="text-[10px] text-slate-400">+${entries.length-4}건 더보기</div>`;
+    html += `</div></div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+
+  container.querySelectorAll('.cal-day-cell').forEach(cell=>{
+    cell.addEventListener('click', (e)=>{
+      if(e.target.closest('.entry-chip')) return; // 칩 클릭은 별도 처리
+      const date = cell.dataset.date;
+      if(STATE.pendingAction){
+        completePendingAction(date, null);
+        return;
+      }
+      const hasEntries = visibleLogsFor(date).length > 0;
+      if(hasEntries){
+        openDayModal(date);
+      } else {
+        openAddModal(date, null); // 내역이 없는 빈 칸은 바로 등록 화면으로
+      }
+    });
+    cell.addEventListener('dragover', (e)=>{ e.preventDefault(); cell.classList.add('drop-target'); });
+    cell.addEventListener('dragleave', ()=> cell.classList.remove('drop-target'));
+    cell.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      cell.classList.remove('drop-target');
+      const id = e.dataTransfer.getData('text/plain');
+      if(!id) return;
+      const src = STATE.logs.find(l=>l.id===id);
+      if(!src) return;
+      const isCopy = e.altKey;
+      performMoveOrCopy(id, cell.dataset.date, src.period, isCopy);
+    });
+  });
+
+  bindEntryChipEvents(container);
+}
+
+function entryChipHtml(en){
+  const pMeta = STATE.periodMeta.find(p=>p.period===en.period);
+  const pLabel = pMeta ? pMeta.label : `${en.period}교시`;
+  return `<span class="entry-chip" draggable="true" data-id="${en.id}"
+      title="${escapeHtml(pLabel)} · ${escapeHtml(en.studentName)} · 사유: ${escapeHtml(en.reason||'')} · 내용: ${escapeHtml(en.content)} · ${escapeHtml(en.teacherName)}">
+      ${escapeHtml(en.studentName)} · ${escapeHtml(en.teacherName)}
+    </span>`;
+}
+
+/**
+ * 주간 뷰의 교시 한 줄(행)을 만드는 공통 헬퍼.
+ */
+function buildPeriodRow(days, period, label, timeLabel, note){
+  let header = `${label}<br><span class="text-[10px] font-normal text-slate-400">${timeLabel}</span>`;
+  if(note) header += `<br><span class="text-[9px] font-normal text-slate-400">${note}</span>`;
+  let row = `<tr><th class="period-th">${header}</th>`;
+  days.forEach(d=>{
+    const dateStr = fmtDate(d);
+    const entries = visibleLogsFor(dateStr, period);
+    row += `<td data-date="${dateStr}" data-period="${period}">`;
+    entries.forEach(en=> row += entryChipHtml(en));
+    row += `</td>`;
+  });
+  row += '</tr>';
+  return row;
+}
+
+/* =====================================================================
+ * 주간 뷰 렌더링 (행: 교시, 열: 날짜)
+ * ===================================================================*/
+function paintWeekView(days){
+  const container = document.getElementById('calendar-container');
+  let html = '<table class="week-table"><thead><tr><th class="period-th">교시</th>';
+  days.forEach(d=>{
+    html += `<th class="${isToday(d)?'bg-indigo-50':''}">${WEEKDAY_LABEL[d.getDay()]} ${d.getMonth()+1}/${d.getDate()}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  STATE.periodMeta.forEach(p=>{
+    html += buildPeriodRow(days, p.period, p.label, p.time, p.note);
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+
+  container.querySelectorAll('td[data-date]').forEach(cell=>{
+    cell.addEventListener('click', (e)=>{
+      if(e.target.closest('.entry-chip')) return;
+      const date = cell.dataset.date, period = Number(cell.dataset.period);
+      if(STATE.pendingAction){
+        completePendingAction(date, period);
+        return;
+      }
+      openAddModal(date, period);
+    });
+    cell.addEventListener('dragover', (e)=>{ e.preventDefault(); cell.classList.add('drop-target'); });
+    cell.addEventListener('dragleave', ()=> cell.classList.remove('drop-target'));
+    cell.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      cell.classList.remove('drop-target');
+      const id = e.dataTransfer.getData('text/plain');
+      if(!id) return;
+      const isCopy = e.altKey;
+      performMoveOrCopy(id, cell.dataset.date, Number(cell.dataset.period), isCopy);
+    });
+  });
+
+  bindEntryChipEvents(container);
+}
+
+/* =====================================================================
+ * 항목(칩) 공통 이벤트: 드래그 시작 / 클릭(팝오버)
+ * ===================================================================*/
+function bindEntryChipEvents(container){
+  container.querySelectorAll('.entry-chip').forEach(chip=>{
+    chip.addEventListener('dragstart', (e)=>{
+      e.dataTransfer.setData('text/plain', chip.dataset.id);
+    });
+    chip.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(STATE.pendingAction){
+        // 붙여넣기 대상 칸을 클릭한 것으로 간주하지 않고, 팝오버 대신 무시 (칸 클릭으로 유도)
+        return;
+      }
+      openEntryPopover(chip, chip.dataset.id, e);
+    });
+  });
+}
+
+function openEntryPopover(chipEl, id, evt){
+  const pop = document.getElementById('entry-popover');
+  const rect = chipEl.getBoundingClientRect();
+  pop.style.left = Math.min(rect.left, window.innerWidth-180) + 'px';
+  pop.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+  pop.classList.remove('hidden');
+  pop.dataset.id = id;
+  pop.querySelectorAll('.popover-btn').forEach(btn=>{
+    btn.onclick = (e)=>{
+      e.stopPropagation();
+      pop.classList.add('hidden');
+      const act = btn.dataset.act;
+      const entry = STATE.logs.find(l=>l.id===id);
+      if(!entry) return;
+      if(act==='copy' || act==='move'){
+        STATE.pendingAction = { type: act, id };
+        document.getElementById('paste-banner').classList.remove('hidden');
+        document.getElementById('paste-banner-text').textContent =
+          (act==='copy' ? '복사' : '이동') + `할 위치를 달력에서 클릭하세요. (${entry.studentName} · ${entry.period}교시)`;
+      } else if(act==='edit'){
+        openEditModal(entry);
+      } else if(act==='delete'){
+        if(confirm(`[${entry.studentName}] ${entry.period}교시 항목을 삭제할까요?`)){
+          callServer('deleteLog', [id], ()=>{ showToast('삭제되었습니다.'); renderCalendar(); });
+        }
+      }
+    };
+  });
+}
+
+function clearPendingAction(){
+  STATE.pendingAction = null;
+  document.getElementById('paste-banner').classList.add('hidden');
+}
+
+function completePendingAction(date, period){
+  const action = STATE.pendingAction;
+  if(!action) return;
+  const entry = STATE.logs.find(l=>l.id===action.id);
+  const targetPeriod = (period !== null && period !== undefined) ? period : (entry ? entry.period : 1);
+  performMoveOrCopy(action.id, date, targetPeriod, action.type==='copy');
+  clearPendingAction();
+}
+
+function performMoveOrCopy(id, date, period, isCopy){
+  const fn = isCopy ? 'copyLog' : 'moveLog';
+  callServer(fn, [id, date, period], ()=>{
+    showToast(isCopy ? '복사되었습니다.' : '이동되었습니다.');
+    renderCalendar();
+  });
+}
+
+/* =====================================================================
+ * 날짜 상세 모달 (월간 뷰에서 특정 날짜 전체 목록 보기)
+ * ===================================================================*/
+function openDayModal(dateStr){
+  const modal = document.getElementById('modal-day');
+  modal.dataset.date = dateStr;
+  document.getElementById('modal-day-title').textContent = dateStr + ' 지도내역';
+  const entries = visibleLogsFor(dateStr).sort((a,b)=>a.period-b.period);
+  const body = document.getElementById('modal-day-body');
+  if(entries.length===0){
+    body.innerHTML = '<p class="text-base text-slate-400">등록된 내역이 없습니다.</p>';
+  } else {
+    body.innerHTML = entries.map(en=>{
+      const pMeta = STATE.periodMeta.find(p=>p.period===en.period);
+      const pLabel = pMeta ? pMeta.label : `${en.period}교시`;
+      return `
+      <div class="border border-slate-200 rounded-lg p-3 flex items-center justify-between gap-3">
+        <div class="text-base">
+          <b>${escapeHtml(pLabel)}</b> · ${escapeHtml(en.studentName)} (${escapeHtml(String(en.grade))}학년 ${escapeHtml(String(en.classNo))}반)
+          <div class="text-sm text-slate-500 mt-1">사유: ${escapeHtml(en.reason||'')}</div>
+          <div class="text-sm text-slate-500 mt-0.5">${escapeHtml(en.content)} · 담당: ${escapeHtml(en.teacherName)}</div>
+        </div>
+        <div class="flex gap-1 text-sm shrink-0">
+          <button class="popover-btn" onclick="openEditModal(${JSON.stringify(en).replace(/"/g,'&quot;')})">✏️</button>
+          <button class="popover-btn text-rose-600" onclick="quickDelete('${en.id}')">🗑</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  modal.classList.remove('hidden');
+}
+function quickDelete(id){
+  if(!confirm('삭제할까요?')) return;
+  callServer('deleteLog', [id], ()=>{
+    showToast('삭제되었습니다.');
+    document.getElementById('modal-day').classList.add('hidden');
+    renderCalendar();
+  });
+}
+
+/* =====================================================================
+ * 등록 / 수정 모달
+ * ===================================================================*/
+function openAddModal(dateStr, period){
+  STATE.editingId = null;
+  document.querySelector('#modal-log h3').textContent = '지도내역 등록';
+  document.getElementById('log-periods-label').textContent = '교시 (다중 선택 가능)';
+  document.getElementById('form-log').reset();
+  document.getElementById('log-date').value = dateStr;
+  document.getElementById('log-date').disabled = false;
+  document.getElementById('log-student').disabled = false;
+  updateDateWeekday();
+  renderPeriodChips();
+  if(period){
+    const chip = document.querySelector(`.period-chip[data-period="${period}"]`);
+    if(chip) chip.classList.add('selected');
+  }
+  document.querySelectorAll('.period-chip').forEach(c=> c.classList.remove('disabled'));
+
+  renderChoiceChips('log-reason-checks', STATE.reasonOptions, 'log-reason-etc-text');
+  renderChoiceChips('log-content-checks', STATE.contentOptions, 'log-content-etc-text');
+  document.getElementById('log-reason-etc-text').classList.add('hidden');
+  document.getElementById('log-content-etc-text').classList.add('hidden');
+
+  document.getElementById('modal-log').classList.remove('hidden');
+}
+
+function openEditModal(entry){
+  STATE.editingId = entry.id;
+  document.querySelector('#modal-log h3').textContent = '지도내역 수정';
+  document.getElementById('log-periods-label').textContent = '교시 (하나만 선택)';
+  document.getElementById('log-date').value = entry.date;
+  document.getElementById('log-date').disabled = true;
+  updateDateWeekday();
+  renderPeriodChips();
+  document.querySelectorAll('.period-chip').forEach(c=>{
+    c.classList.toggle('selected', Number(c.dataset.period)===Number(entry.period));
+  });
+  // 학생은 스냅샷(이름)이라 변경 시 새 학생 정보로 덮어씀 - 현재 이름과 일치하는 학생 자동 선택 시도
+  const matchedStudent = STATE.students.find(s=> s.name === entry.studentName);
+  if(matchedStudent) document.getElementById('log-student').value = matchedStudent.id;
+  const matchedTeacher = STATE.teachers.find(t=> t.name === entry.teacherName);
+  if(matchedTeacher) document.getElementById('log-teacher').value = matchedTeacher.id;
+
+  renderChoiceChips('log-reason-checks', STATE.reasonOptions, 'log-reason-etc-text');
+  renderChoiceChips('log-content-checks', STATE.contentOptions, 'log-content-etc-text');
+  document.getElementById('log-reason-etc-text').classList.add('hidden');
+  document.getElementById('log-content-etc-text').classList.add('hidden');
+  prefillChoiceChips('log-reason-checks', 'log-reason-etc-text', entry.reason);
+  prefillChoiceChips('log-content-checks', 'log-content-etc-text', entry.content);
+
+  document.getElementById('modal-day').classList.add('hidden');
+  document.getElementById('modal-log').classList.remove('hidden');
+}
+
+/** 일자 입력창 옆에 (요일)을 표시/갱신 */
+/**
+ * 날짜 입력창(inputId)의 값에 맞춰 오버레이 텍스트(inputId+'-overlay')와
+ * 요일 표시(inputId+'-weekday')를 갱신. 브라우저 내장 날짜 표시는 항상 투명 처리되어
+ * 있고, 이 함수가 그 자리를 대신할 텍스트를 채워줍니다.
+ */
+/**
+ * 날짜 입력창(inputId)의 값에 맞춰 오버레이 텍스트(inputId+'-overlay')를 갱신.
+ * 날짜와 요일을 함께 표시해서, 요일이 달력 아이콘이 아니라 날짜 바로 옆에 나오게 함.
+ * 브라우저 내장 날짜 표시는 항상 투명 처리되어 있고, 이 함수가 그 자리를 대신함.
+ */
+function updateDateDisplay(inputId){
+  const val = document.getElementById(inputId).value;
+  const overlay = document.getElementById(inputId + '-overlay');
+  if(!val){
+    if(overlay){ overlay.textContent = '날짜 선택'; overlay.style.color = '#94a3b8'; }
+    return;
+  }
+  const d = parseDate(val);
+  if(overlay){
+    overlay.textContent = `${val} (${WEEKDAY_LABEL[d.getDay()]})`;
+    overlay.style.color = '#1e293b';
+  }
+}
+// 기존 코드 호환용 별칭
+function updateDateWeekday(){ updateDateDisplay('log-date'); }
+
+function closeLogModal(){
+  document.getElementById('modal-log').classList.add('hidden');
+  document.getElementById('log-date').disabled = false;
+}
+
+function onSubmitLogForm(e){
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const selectedPeriods = Array.from(document.querySelectorAll('.period-chip.selected')).map(c=> Number(c.dataset.period));
+  const reason = collectChoiceValues('log-reason-checks', 'log-reason-etc-text');
+  const content = collectChoiceValues('log-content-checks', 'log-content-etc-text');
+
+  if(!reason){ showToast('개별학생교육지원 사유를 1개 이상 선택하세요.', true); return; }
+  if(!content){ showToast('수업 및 생활지도 내용을 1개 이상 선택하세요.', true); return; }
+
+  if(STATE.editingId){
+    if(selectedPeriods.length===0){ showToast('교시를 선택하세요.', true); return; }
+    callServer('updateLogContent', [STATE.editingId, {
+      period: selectedPeriods[0],
+      reason: reason,
+      content: content,
+      studentId: f.get('studentId'),
+      teacherId: f.get('teacherId')
+    }], ()=>{
+      showToast('수정되었습니다.');
+      closeLogModal();
+      renderCalendar();
+    });
+    return;
+  }
+
+  if(selectedPeriods.length===0){ showToast('교시를 1개 이상 선택하세요.', true); return; }
+
+  callServer('addLogs', [{
+    date: f.get('date'),
+    periods: selectedPeriods,
+    studentId: f.get('studentId'),
+    teacherId: f.get('teacherId'),
+    reason: reason,
+    content: content
+  }], (res)=>{
+    showToast('저장되었습니다.');
+    closeLogModal();
+    // 서버에 다시 물어보지 않고, 방금 저장된 항목을 바로 화면에 반영 (왕복 1회 절약)
+    if(res && res.entries) STATE.logs = STATE.logs.concat(res.entries);
+    repaintCalendar();
+  });
+}
+
+/* =====================================================================
+ * 통계
+ * ===================================================================*/
+function runStats(){
+  const start = document.getElementById('stats-start').value;
+  const end = document.getElementById('stats-end').value;
+  const teacherId = document.getElementById('stats-teacher').value;
+  if(!start || !end){ showToast('기간을 선택하세요.', true); return; }
+
+  callServer('getStats', [start, end, teacherId], (res)=>{
+    document.getElementById('stats-range-label').textContent = `${start} ~ ${end}`;
+    document.getElementById('print-range-label').textContent = `${start} ~ ${end}`;
+    document.getElementById('stats-total-label').textContent = res.total;
+
+    document.getElementById('stats-teacher-table').innerHTML =
+      '<tr><th>담당교사</th><th>총 지도교시</th></tr>' +
+      (res.byTeacher.length
+        ? res.byTeacher.map(r=>`<tr><td>${escapeHtml(r.teacherName)}</td><td>${r.count}</td></tr>`).join('')
+        : '<tr><td colspan="2" class="text-slate-400">데이터 없음</td></tr>');
+
+    document.getElementById('stats-student-table').innerHTML =
+      '<tr><th>학생명</th><th>총 지도교시</th></tr>' +
+      res.byStudent.map(r=>`<tr><td>${escapeHtml(r.studentName)}</td><td>${r.count}</td></tr>`).join('');
+
+    document.getElementById('stats-detail-table').innerHTML =
+      `<tr><th>일자</th><th>교시</th><th>학년</th><th>반</th><th>학생명</th><th>사유</th><th>수업 및 생활지도 내용</th><th>담당교사</th><th class="sign-col">서명</th></tr>` +
+      res.entries.map(en=>`<tr>
+        <td>${en.date}</td><td>${en.period}</td><td>${en.grade}</td><td>${en.classNo}</td>
+        <td>${escapeHtml(en.studentName)}</td><td>${escapeHtml(en.reason||'')}</td><td>${escapeHtml(en.content)}</td><td>${escapeHtml(en.teacherName)}</td>
+        <td class="sign-col"></td>
+      </tr>`).join('');
+  });
+}
+
+/* =====================================================================
+ * 설정 - 학생/교사 일괄 등록 (여러 명 한 번에 입력 후 한 번에 저장)
+ * ===================================================================*/
+let bulkStudentRowSeq = 0;
+function addBulkStudentRow(){
+  const idx = bulkStudentRowSeq++;
+  const wrap = document.getElementById('bulk-student-rows');
+  const row = document.createElement('div');
+  row.className = 'grid grid-cols-6 gap-2';
+  row.dataset.rowId = idx;
+  row.innerHTML = `
+    <input placeholder="고유번호" class="input-box bs-id" data-row="${idx}">
+    <input type="number" min="1" max="6" placeholder="학년" class="input-box bs-grade" data-row="${idx}">
+    <input placeholder="반" class="input-box bs-class" data-row="${idx}">
+    <input placeholder="이름" class="input-box bs-name" data-row="${idx}">
+    <input placeholder="번호" class="input-box bs-roll" data-row="${idx}">
+    <div class="flex gap-1">
+      <select class="select-box bs-gender flex-1" data-row="${idx}">
+        <option value="">성별-</option><option value="남">남</option><option value="여">여</option>
+      </select>
+      <button type="button" class="popover-btn text-rose-600" onclick="this.closest('div[data-row-id]').remove()">✕</button>
+    </div>
+  `;
+  wrap.appendChild(row);
+}
+function saveBulkStudents(){
+  const rows = Array.from(document.querySelectorAll('#bulk-student-rows > div')).map(r=>({
+    id: r.querySelector('.bs-id').value.trim(),
+    grade: r.querySelector('.bs-grade').value,
+    classNo: r.querySelector('.bs-class').value.trim(),
+    name: r.querySelector('.bs-name').value.trim(),
+    rollNo: r.querySelector('.bs-roll').value.trim(),
+    gender: r.querySelector('.bs-gender').value
+  })).filter(r=> r.id || r.name); // 완전히 빈 행은 제외
+
+  if(rows.length===0){ showToast('입력된 행이 없습니다.', true); return; }
+
+  callServer('addStudentsBulk', [rows], (res)=>{
+    let msg = `${res.insertedCount}명 저장되었습니다.`;
+    if(res.skipped.length>0){
+      msg += ` (건너뜀 ${res.skipped.length}건: ${res.skipped.map(s=>s.id||'-').join(', ')})`;
+    }
+    showToast(msg, res.skipped.length>0);
+    document.getElementById('bulk-student-rows').innerHTML = '';
+    for(let i=0;i<3;i++) addBulkStudentRow();
+    refreshMasterData();
+  });
+}
+
+let bulkTeacherRowSeq = 0;
+function addBulkTeacherRow(){
+  const idx = bulkTeacherRowSeq++;
+  const wrap = document.getElementById('bulk-teacher-rows');
+  const row = document.createElement('div');
+  row.className = 'grid grid-cols-5 gap-2';
+  row.dataset.rowId = idx;
+  row.innerHTML = `
+    <input placeholder="고유번호" class="input-box bt-id" data-row="${idx}">
+    <input placeholder="이름" class="input-box bt-name" data-row="${idx}">
+    <input placeholder="담당" class="input-box bt-assign" data-row="${idx}">
+    <input placeholder="구분" class="input-box bt-division" data-row="${idx}">
+    <div class="flex gap-1">
+      <input placeholder="보직" class="input-box bt-position flex-1" data-row="${idx}">
+      <button type="button" class="popover-btn text-rose-600" onclick="this.closest('div[data-row-id]').remove()">✕</button>
+    </div>
+  `;
+  wrap.appendChild(row);
+}
+function saveBulkTeachers(){
+  const rows = Array.from(document.querySelectorAll('#bulk-teacher-rows > div')).map(r=>({
+    id: r.querySelector('.bt-id').value.trim(),
+    name: r.querySelector('.bt-name').value.trim(),
+    assign: r.querySelector('.bt-assign').value.trim(),
+    division: r.querySelector('.bt-division').value.trim(),
+    position: r.querySelector('.bt-position').value.trim()
+  })).filter(r=> r.id || r.name);
+
+  if(rows.length===0){ showToast('입력된 행이 없습니다.', true); return; }
+
+  callServer('addTeachersBulk', [rows], (res)=>{
+    let msg = `${res.insertedCount}명 저장되었습니다.`;
+    if(res.skipped.length>0){
+      msg += ` (건너뜀 ${res.skipped.length}건: ${res.skipped.map(s=>s.id||'-').join(', ')})`;
+    }
+    showToast(msg, res.skipped.length>0);
+    document.getElementById('bulk-teacher-rows').innerHTML = '';
+    for(let i=0;i<3;i++) addBulkTeacherRow();
+    refreshMasterData();
+  });
+}
+
+let bulkReasonRowSeq = 0;
+function addBulkReasonRow(){
+  const idx = bulkReasonRowSeq++;
+  const wrap = document.getElementById('bulk-reason-rows');
+  const row = document.createElement('div');
+  row.className = 'grid grid-cols-4 gap-2';
+  row.dataset.rowId = idx;
+  row.innerHTML = `
+    <input placeholder="번호" class="input-box br-id" data-row="${idx}">
+    <input placeholder="사유명" class="input-box br-name" data-row="${idx}">
+    <input placeholder="구분" class="input-box br-category" data-row="${idx}">
+    <button type="button" class="popover-btn text-rose-600" onclick="this.closest('div[data-row-id]').remove()">✕</button>
+  `;
+  wrap.appendChild(row);
+}
+function saveBulkReasons(){
+  const rows = Array.from(document.querySelectorAll('#bulk-reason-rows > div')).map(r=>({
+    id: r.querySelector('.br-id').value.trim(),
+    name: r.querySelector('.br-name').value.trim(),
+    category: r.querySelector('.br-category').value.trim()
+  })).filter(r=> r.id || r.name);
+
+  if(rows.length===0){ showToast('입력된 행이 없습니다.', true); return; }
+
+  callServer('addReasonsBulk', [rows], (res)=>{
+    let msg = `${res.insertedCount}개 저장되었습니다.`;
+    if(res.skipped.length>0){
+      msg += ` (건너뜀 ${res.skipped.length}건: ${res.skipped.map(s=>s.id||'-').join(', ')})`;
+    }
+    showToast(msg, res.skipped.length>0);
+    document.getElementById('bulk-reason-rows').innerHTML = '';
+    for(let i=0;i<3;i++) addBulkReasonRow();
+    refreshMasterData();
+  });
+}
+
+let bulkContentRowSeq = 0;
+function addBulkContentRow(){
+  const idx = bulkContentRowSeq++;
+  const wrap = document.getElementById('bulk-content-rows');
+  const row = document.createElement('div');
+  row.className = 'grid grid-cols-4 gap-2';
+  row.dataset.rowId = idx;
+  row.innerHTML = `
+    <input placeholder="번호" class="input-box bc-id" data-row="${idx}">
+    <input placeholder="내용명" class="input-box bc-name" data-row="${idx}">
+    <input placeholder="구분" class="input-box bc-category" data-row="${idx}">
+    <button type="button" class="popover-btn text-rose-600" onclick="this.closest('div[data-row-id]').remove()">✕</button>
+  `;
+  wrap.appendChild(row);
+}
+function saveBulkContents(){
+  const rows = Array.from(document.querySelectorAll('#bulk-content-rows > div')).map(r=>({
+    id: r.querySelector('.bc-id').value.trim(),
+    name: r.querySelector('.bc-name').value.trim(),
+    category: r.querySelector('.bc-category').value.trim()
+  })).filter(r=> r.id || r.name);
+
+  if(rows.length===0){ showToast('입력된 행이 없습니다.', true); return; }
+
+  callServer('addContentsBulk', [rows], (res)=>{
+    let msg = `${res.insertedCount}개 저장되었습니다.`;
+    if(res.skipped.length>0){
+      msg += ` (건너뜀 ${res.skipped.length}건: ${res.skipped.map(s=>s.id||'-').join(', ')})`;
+    }
+    showToast(msg, res.skipped.length>0);
+    document.getElementById('bulk-content-rows').innerHTML = '';
+    for(let i=0;i<3;i++) addBulkContentRow();
+    refreshMasterData();
+  });
+}
+
+/* =====================================================================
+ * 설정 - 학생/교사/문구 테이블 렌더링
+ * ===================================================================*/
+function renderStudentTable(){
+  const table = document.getElementById('student-table');
+  table.innerHTML = '<tr><th>고유번호</th><th>학년</th><th>반</th><th>이름</th><th>번호</th><th>성별</th><th></th></tr>' +
+    STATE.students.map(s=>`
+      <tr data-id="${s.id}">
+        <td>${s.id}</td>
+        <td><input class="input-box w-14 std-grade" type="number" min="1" max="6" value="${s.grade}"></td>
+        <td><input class="input-box w-12 std-class" value="${s.classNo}"></td>
+        <td><input class="input-box w-20 std-name" value="${escapeHtml(s.name||'')}"></td>
+        <td><input class="input-box w-14 std-roll" value="${escapeHtml(s.rollNo||'')}"></td>
+        <td>
+          <select class="select-box w-16 std-gender">
+            <option value="" ${!s.gender?'selected':''}>-</option>
+            <option value="남" ${s.gender==='남'?'selected':''}>남</option>
+            <option value="여" ${s.gender==='여'?'selected':''}>여</option>
+          </select>
+        </td>
+        <td class="whitespace-nowrap">
+          <button class="popover-btn" onclick="saveStudentRow('${s.id}')">저장</button>
+          <button class="popover-btn text-rose-600" onclick="removeStudent('${s.id}')">삭제</button>
+        </td>
+      </tr>`).join('');
+}
+function saveStudentRow(id){
+  const row = document.querySelector(`#student-table tr[data-id="${id}"]`);
+  const grade = row.querySelector('.std-grade').value;
+  const classNo = row.querySelector('.std-class').value;
+  const name = row.querySelector('.std-name').value;
+  const rollNo = row.querySelector('.std-roll').value;
+  const gender = row.querySelector('.std-gender').value;
+  callServer('updateStudent', [id, Number(grade), classNo, name, rollNo, gender], ()=>{
+    showToast('저장되었습니다.');
+    refreshMasterData();
+  });
+}
+function removeStudent(id){
+  if(!confirm('삭제할까요? (기존 지도내역 기록은 유지됩니다)')) return;
+  callServer('deleteStudent', [id], ()=>{ showToast('삭제되었습니다.'); refreshMasterData(); });
+}
+
+function renderTeacherTable(){
+  const table = document.getElementById('teacher-table');
+  table.innerHTML = '<tr><th>고유번호</th><th>이름</th><th>담당</th><th>구분</th><th>보직</th><th></th></tr>' +
+    STATE.teachers.map(t=>`
+      <tr data-id="${t.id}">
+        <td>${t.id}</td>
+        <td><input class="input-box w-20 tch-name" value="${escapeHtml(t.name)}"></td>
+        <td><input class="input-box w-20 tch-assign" value="${escapeHtml(t.assign||'')}"></td>
+        <td><input class="input-box w-16 tch-division" value="${escapeHtml(t.division||'')}"></td>
+        <td><input class="input-box w-16 tch-position" value="${escapeHtml(t.position||'')}"></td>
+        <td class="whitespace-nowrap">
+          <button class="popover-btn" onclick="saveTeacherRow('${t.id}')">저장</button>
+          <button class="popover-btn text-rose-600" onclick="removeTeacher('${t.id}')">삭제</button>
+        </td>
+      </tr>`).join('');
+}
+function saveTeacherRow(id){
+  const row = document.querySelector(`#teacher-table tr[data-id="${id}"]`);
+  const name = row.querySelector('.tch-name').value;
+  const assign = row.querySelector('.tch-assign').value;
+  const division = row.querySelector('.tch-division').value;
+  const position = row.querySelector('.tch-position').value;
+  callServer('updateTeacher', [id, name, assign, division, position], ()=>{ showToast('저장되었습니다.'); refreshMasterData(); });
+}
+function removeTeacher(id){
+  if(!confirm('삭제할까요? (기존 지도내역 기록은 유지됩니다)')) return;
+  callServer('deleteTeacher', [id], ()=>{ showToast('삭제되었습니다.'); refreshMasterData(); });
+}
+
+function renderReasonTable(){
+  const table = document.getElementById('reason-table');
+  table.innerHTML = '<tr><th>번호</th><th>사유명</th><th>구분</th><th></th></tr>' +
+    STATE.reasonOptions.map(r=>`
+      <tr data-id="${r.id}">
+        <td>${r.id}</td>
+        <td><input class="input-box w-28 rsn-name" value="${escapeHtml(r.name)}"></td>
+        <td><input class="input-box w-24 rsn-category" value="${escapeHtml(r.category||'')}"></td>
+        <td class="whitespace-nowrap">
+          <button class="popover-btn" onclick="saveReasonRow('${r.id}')">저장</button>
+          <button class="popover-btn text-rose-600" onclick="removeReason('${r.id}')">삭제</button>
+        </td>
+      </tr>`).join('');
+}
+function saveReasonRow(id){
+  const row = document.querySelector(`#reason-table tr[data-id="${id}"]`);
+  const name = row.querySelector('.rsn-name').value;
+  const category = row.querySelector('.rsn-category').value;
+  callServer('updateReason', [id, name, category], ()=>{ showToast('저장되었습니다.'); refreshMasterData(); });
+}
+function removeReason(id){
+  if(!confirm('삭제할까요? (기존 지도내역 기록은 유지됩니다)')) return;
+  callServer('deleteReason', [id], ()=>{ showToast('삭제되었습니다.'); refreshMasterData(); });
+}
+
+function renderContentTable(){
+  const table = document.getElementById('content-table');
+  table.innerHTML = '<tr><th>번호</th><th>내용명</th><th>구분</th><th></th></tr>' +
+    STATE.contentOptions.map(c=>`
+      <tr data-id="${c.id}">
+        <td>${c.id}</td>
+        <td><input class="input-box w-28 cnt-name" value="${escapeHtml(c.name)}"></td>
+        <td><input class="input-box w-24 cnt-category" value="${escapeHtml(c.category||'')}"></td>
+        <td class="whitespace-nowrap">
+          <button class="popover-btn" onclick="saveContentRow('${c.id}')">저장</button>
+          <button class="popover-btn text-rose-600" onclick="removeContent('${c.id}')">삭제</button>
+        </td>
+      </tr>`).join('');
+}
+function saveContentRow(id){
+  const row = document.querySelector(`#content-table tr[data-id="${id}"]`);
+  const name = row.querySelector('.cnt-name').value;
+  const category = row.querySelector('.cnt-category').value;
+  callServer('updateContent', [id, name, category], ()=>{ showToast('저장되었습니다.'); refreshMasterData(); });
+}
+function removeContent(id){
+  if(!confirm('삭제할까요? (기존 지도내역 기록은 유지됩니다)')) return;
+  callServer('deleteContent', [id], ()=>{ showToast('삭제되었습니다.'); refreshMasterData(); });
+}
+</script>
+
+</body>
+</html>
